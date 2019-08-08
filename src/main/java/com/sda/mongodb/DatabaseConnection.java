@@ -24,6 +24,7 @@ public class DatabaseConnection {
 
     public static void main(String[] args) {
 
+        //create a connection to the mongodb, don't forget to close it when finished
         MongoClient mongoClient = MongoClients.create();
 
         // if database doesn't exists, MongoDB will create it for you
@@ -33,14 +34,14 @@ public class DatabaseConnection {
         MongoCollection<Document> collection = database.getCollection("patients");
 
         // create a document
-        Document document = new Document("name", "MongoDB")
+        Document newDocument = new Document("name", "MongoDB")
                 .append("type", "database")
                 .append("count", 1)
                 .append("versions", Arrays.asList("v3.2", "v3.0", "v2.6"))
                 .append("info", new Document("x", 203).append("y", 102));
 
         // insert one document
-        collection.insertOne(document);
+        collection.insertOne(newDocument);
 
         // insert many
         List<Document> documents = new ArrayList<>();
@@ -76,8 +77,7 @@ public class DatabaseConnection {
         System.out.println("Document with 'i' = 71: " + myDoc.toJson());
 
         // get all documents that match a filter
-        Block<Document> printBlock = doc ->
-                System.out.println(doc.toJson());
+        Block<Document> printBlock = document -> System.out.println(document.toJson());
 
         System.out.println("\n\n");
         System.out.println("Printing documents with 'i' > 50:");
@@ -100,6 +100,8 @@ public class DatabaseConnection {
         // delete all documents that match a filter
         DeleteResult deleteResult = collection.deleteMany(gte("i", 100));
         System.out.println("Deleted documents: " + deleteResult.getDeletedCount());
+
+        mongoClient.close();
     }
 }
 
